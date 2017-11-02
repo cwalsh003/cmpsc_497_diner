@@ -74,8 +74,13 @@ topIngredients.sort_values(by="TfIdf",ascending=False)
 
 bestK = None
 bestKMeanAcc = 0
-
-v = CountVectorizer(ngram_range=(1,6),max_features=200, max_df= 0.1)
+ITEMS = 200
+v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,5),
+                    max_features=ITEMS,
+                    max_df=0.5,tokenizer=tokenize
+                  
+                    )
+#v = CountVectorizer(ngram_range=(1,6),max_features=200, max_df= 0.1,tokenizer=tokenize,)
 
 df_x = v.fit_transform(df.Ingredients.values.astype('U')).todense()
 
