@@ -10,6 +10,8 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer 
 from sklearn.feature_extraction.text import TfidfVectorizer 
+from sklearn.model_selection import cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
 
 df = pd.read_csv( "train.csv", index_col="RecipeId")
 df.target = df.Target.astype('category')
@@ -17,9 +19,13 @@ df.head()
 
 import operator
 
-ITEMS = 15
+#ITEMS = 20
 cuisines=["","French","Italian","Indian","Chinese","Thai","Greek","Mexican"]
-v = CountVectorizer(ngram_range=(1,3),max_features=ITEMS)
+#
+
+v = CountVectorizer(ngram_range=(1,2),max_features=ITEMS, stop_words = ['fresh', 'black',"french","italian","indian","chinese","thai","greek","mexican"])
+
+
 for i in range(1,8):
     df_x = v.fit_transform(df[df.Target == i].Ingredients.values.astype('U'))
     print("\nTop",ITEMS,"Ingredients for",cuisines[i],"Recipes")
@@ -29,14 +35,15 @@ for i in range(1,8):
         n += 1
         
         
-ITEMS = 50
-v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,3),max_features=ITEMS)
+ITEMS = 200
+
 df_x = v.fit_transform(df.Ingredients.values.astype('U'))
 idf = v.idf_
 
 topIngredients = pd.DataFrame({"Ingredient": v.get_feature_names(),"TfIdf":idf})
 print("Top",ITEMS,"Ingredients")
 topIngredients.sort_values(by="TfIdf",ascending=False)
+
 
 import nltk
 from nltk.stem.porter import PorterStemmer
@@ -50,11 +57,36 @@ def tokenize(text):
         stems.append(PorterStemmer().stem(item))
     return stems
 
-ITEMS = 50
-v = TfidfVectorizer(sublinear_tf=True, tokenizer=tokenize, stop_words='english', ngram_range=(1,3),max_features=ITEMS)
+ITEMS = 20
+v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,8),
+                    max_features=ITEMS,
+                    stop_words = ['fresh','red','green','dried','boneless',  
+                                  'black',"french","italian","indian",
+                                  "chinese","thai","greek","mexican"]
+                    ,min_df=5)
+
 df_x = v.fit_transform(df.Ingredients.values.astype('U'))
 idf = v.idf_
 
 topIngredients = pd.DataFrame({"Ingredient": v.get_feature_names(),"TfIdf":idf})
+
 print("Top",ITEMS,"Ingredients")
 topIngredients.sort_values(by="TfIdf",ascending=False)
+
+bestK = None
+bestKMeanAcc = 0
+
+#v = CountVectorizer(max_features=100)
+#df_x = v.fit_transform(df.Ingredients.values.astype('U')).todense()
+
+for k in [3,5,7,9,13]:    
+    knn = KNeighborsClassifier(n_neighbors = k, weights='uniform',
+                               algorithm="auto")
+    scores = cross_val_score(knn, df_x, df.target, cv=10)
+
+    print("For k =",k," mean accuracy accross folds =",scores.mean()," standard deviation across folds =",scores.std())
+    if bestK == None or scores.mean() < bestKMeanAcc:
+        bestK = k
+        bestKMeanAcc = scores.mean()
+        
+print("Best k =", k,"with estimated accuracy of",scores.mean())
