@@ -37,6 +37,7 @@ for i in range(1,8):
         
 ITEMS = 200
 v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,3),max_features=ITEMS)
+
 df_x = v.fit_transform(df.Ingredients.values.astype('U'))
 idf = v.idf_
 
@@ -57,12 +58,7 @@ def tokenize(text):
         stems.append(PorterStemmer().stem(item))
     return stems
 
-ITEMS = 200
-v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,5),
-                    max_features=ITEMS,
-                    max_df=0.5,
-                    min_df=2, stop_words='english',
-                    use_idf=True)
+
 
 df_x = v.fit_transform(df.Ingredients.values.astype('U'))
 idf = v.idf_
@@ -74,12 +70,19 @@ topIngredients.sort_values(by="TfIdf",ascending=False)
 
 bestK = None
 bestKMeanAcc = 0
+ITEMS = 500
 
-v = CountVectorizer(ngram_range=(1,6),max_features=200, max_df= 0.1)
+v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,5),
+                    max_features=ITEMS,
+                    #max_df=0.8,
+                    tokenizer=tokenize
+
+                    )
+#v = CountVectorizer(ngram_range=(1,6),max_features=200, max_df= 0.1)
 
 df_x = v.fit_transform(df.Ingredients.values.astype('U')).todense()
 
-for k in [3,5,7,9,13]:    
+for k in [13]:    
     knn = KNeighborsClassifier(n_neighbors = k, weights='uniform',
                                algorithm="auto")
     scores = cross_val_score(knn, df_x, df.target, cv=10)
