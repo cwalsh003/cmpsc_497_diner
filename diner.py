@@ -19,11 +19,11 @@ df.head()
 
 import operator
 
-#ITEMS = 20
+ITEMS = 20
 cuisines=["","French","Italian","Indian","Chinese","Thai","Greek","Mexican"]
 #
 
-v = CountVectorizer(ngram_range=(1,2),max_features=ITEMS, stop_words = ['fresh', 'black',"french","italian","indian","chinese","thai","greek","mexican"])
+v = CountVectorizer(ngram_range=(1,6),max_features=ITEMS, max_df= 0.1)
 
 
 for i in range(1,8):
@@ -36,7 +36,7 @@ for i in range(1,8):
         
         
 ITEMS = 200
-
+v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,3),max_features=ITEMS)
 df_x = v.fit_transform(df.Ingredients.values.astype('U'))
 idf = v.idf_
 
@@ -57,13 +57,12 @@ def tokenize(text):
         stems.append(PorterStemmer().stem(item))
     return stems
 
-ITEMS = 20
-v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,8),
+ITEMS = 200
+v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,5),
                     max_features=ITEMS,
-                    stop_words = ['fresh','red','green','dried','boneless',  
-                                  'black',"french","italian","indian",
-                                  "chinese","thai","greek","mexican"]
-                    ,min_df=5)
+                    max_df=0.5,
+                    min_df=2, stop_words='english',
+                    use_idf=True)
 
 df_x = v.fit_transform(df.Ingredients.values.astype('U'))
 idf = v.idf_
@@ -76,8 +75,9 @@ topIngredients.sort_values(by="TfIdf",ascending=False)
 bestK = None
 bestKMeanAcc = 0
 
-#v = CountVectorizer(max_features=100)
-#df_x = v.fit_transform(df.Ingredients.values.astype('U')).todense()
+v = CountVectorizer(ngram_range=(1,6),max_features=200, max_df= 0.1)
+
+df_x = v.fit_transform(df.Ingredients.values.astype('U')).todense()
 
 for k in [3,5,7,9,13]:    
     knn = KNeighborsClassifier(n_neighbors = k, weights='uniform',
