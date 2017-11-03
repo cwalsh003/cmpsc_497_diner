@@ -1,0 +1,12 @@
+[nltk_data] Downloading package punkt to /home/sms97/nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+For k = 3  mean accuracy accross folds = 0.128291267609  standard deviation across folds = 0.0193744828867
+For k = 5  mean accuracy accross folds = 0.174226256449  standard deviation across folds = 0.0153735328632
+Best k = 5 with estimated accuracy of 0.174226256449
+Items:  1
+CV:  10
+For k = 3  mean accuracy accross folds = 0.211404052912  standard deviation across folds = 0.024980463652
+For k = 5  mean accuracy accross folds = 0.204745026647  standard deviation across folds = 0.0298420625083
+Best k = 5 with estimated accuracy of 0.204745026647
+Items:  2
+CV:  10

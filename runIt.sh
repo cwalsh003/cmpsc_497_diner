@@ -1,3 +1,3 @@
-/opt/anaconda/bin/python3 test.py >/dev/null 2 >& out2.txt&
+/opt/anaconda/bin/python3 test.py > out.txt
 
-./pushIt.sh&
+./pushIt.sh
