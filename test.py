@@ -23,14 +23,17 @@ def tokenize(text):
     return stems
 
 k_list = list()
+cv_list = list()
 max_accuracy = 0
 
-for z in range(3,50):
+for z in range(3,50): # max 50
 	if (z % 2 != 0):
 		k_list.append(z)
 
+for x in range(10,15):
+	cv_list.append(x)
 
-for i in range(1,700):
+for i in range(1,700): #700 max
 	bestK = None
 	bestKMeanAcc = 0
 	ITEMS = i
@@ -43,16 +46,18 @@ for i in range(1,700):
 	
 	df_x = v.fit_transform(df.Ingredients.values.astype('U')).todense()
 	
-	
-	for k in k_list:    
-	    knn = KNeighborsClassifier(n_neighbors = k, weights='uniform',
+	for j in cv_list:
+		for k in k_list:    
+	    		knn = KNeighborsClassifier(n_neighbors = k, weights='distance',
 	                               algorithm="auto")
-	    scores = cross_val_score(knn, df_x, df.target, cv=10)
+	    		scores = cross_val_score(knn, df_x, df.target, cv=j)
 	
-	    print("For k =",k," mean accuracy accross folds =",scores.mean()," standard deviation across folds =",scores.std())
-	    if bestK == None or scores.mean() < bestKMeanAcc:
-	        bestK = k
-	        bestKMeanAcc = scores.mean()
-	        
-	print("Best k =", k,"with estimated accuracy of",scores.mean())
+	    		print("For k =",k," mean accuracy accross folds =",scores.mean()," standard deviation across folds =",scores.std())
+	    		if bestK == None or scores.mean() < bestKMeanAcc:
+	        		bestK = k
+	        		bestKMeanAcc = scores.mean()
+	       	 
+		print("Best k =", k,"with estimated accuracy of", scores.mean())
+		print("Items: ", ITEMS)
+		print("CV: ", j)
 
