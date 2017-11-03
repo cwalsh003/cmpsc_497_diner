@@ -72,7 +72,7 @@ bestK = None
 bestKMeanAcc = 0
 ITEMS = 500
 
-v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,5),
+v = TfidfVectorizer(ngram_range=(1,3),
                     max_features=ITEMS,
                     #max_df=0.8,
                     tokenizer=tokenize
@@ -82,10 +82,10 @@ v = TfidfVectorizer(sublinear_tf=True, ngram_range=(1,5),
 
 df_x = v.fit_transform(df.Ingredients.values.astype('U')).todense()
 
-for k in [13]:    
-    knn = KNeighborsClassifier(n_neighbors = k, weights='uniform',
+for k in [13,15,17,19]:    
+    knn = KNeighborsClassifier(n_neighbors = k, weights='distance',
                                algorithm="auto")
-    scores = cross_val_score(knn, df_x, df.target, cv=10)
+    scores = cross_val_score(knn, df_x, df.target, cv=13)
 
     print("For k =",k," mean accuracy accross folds =",scores.mean()," standard deviation across folds =",scores.std())
     if bestK == None or scores.mean() < bestKMeanAcc:
