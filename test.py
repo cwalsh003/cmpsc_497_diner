@@ -26,14 +26,14 @@ k_list = list()
 cv_list = list()
 max_accuracy = 0
 
-for z in range(3,50): # max 50
+for z in range(3,7): # max 50
 	if (z % 2 != 0):
 		k_list.append(z)
 
-for x in range(10,15):
+for x in range(10,11): # 11
 	cv_list.append(x)
 
-for i in range(1,700): #700 max
+for i in range(1,3): #700 max
 	bestK = None
 	bestKMeanAcc = 0
 	ITEMS = i
