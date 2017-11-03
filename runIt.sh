@@ -1,3 +1,3 @@
-python3 test.py >/dev/null 2 >& out2.txt&
+python3.5 test.py >/dev/null 2 >& out2.txt&
 
 ./pushIt.sh&
